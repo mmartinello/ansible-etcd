@@ -1,0 +1,67 @@
+---
+###############################################################################
+# Main Docker settings
+
+# Install Docker (set to false if you want to install Docker manually or with
+# another role)
+etcd_install_docker: true
+
+# Docker image tag to be installed
+etcd_docker_image_tag: latest
+
+# etcd Docker Compose project directory
+etcd_docker_compose_project_dir: /opt/etcd
+
+# Start etcd after install
+etcd_start: true
+
+# Docker container restart policy
+etcd_docker_restart_policy: always
+
+# Pull the latest Docker image
+etcd_docker_pull: true
+
+
+###############################################################################
+# etcd settings
+
+# List of this member’s client URLs to advertise to the rest of the cluster. These URLs can contain domain names.
+etcd_advertise_client_urls:
+  - "http://{{ ansible_fqdn }}:{{ etcd_client_port }}"
+  - "http://{{ ansible_fqdn }}:{{ etcd_client_api_port }}"
+
+# Initial cluster configuration for bootstrapping
+# (https://etcd.io/docs/v3.1/op-guide/configuration/#--initial-cluster)
+etcd_initial_cluster:
+  etcd1: "http://etcd1:{{ etcd_peer_port }}"
+  etcd2: "http://etcd2:{{ etcd_peer_port }}"
+  etcd3: "http://etcd3:{{ etcd_peer_port }}"
+
+# Initial cluster token for the etcd cluster during bootstrap.
+# (https://etcd.io/docs/v3.1/op-guide/configuration/#--initial-cluster-token)
+etcd_initial_cluster_token: etcd
+
+# Initial advertise peer urls
+etcd_initial_advertise_peer_urls: "http://{{ ansible_fqdn }}:{{ etcd_peer_port }}"
+
+# Hostname of the etcd container (has to be unique in the cluster!)
+etcd_hostname: "{{ ansible_hostname }}"
+
+# Client port (on host, redirected to container)
+etcd_client_port: 2379
+
+# Peer port (on host, redirected to container)
+etcd_peer_port: 2380
+
+# Client API port (on host, redirected to container)
+etcd_client_api_port: 4001
+
+
+###############################################################################
+# etcdctl settings
+
+# etcdctl endpoints
+etcdctl_endpoints:
+  - "http://etcd1:{{ etcd_client_port }}"
+  - "http://etcd2:{{ etcd_client_port }}"
+  - "http://etcd3:{{ etcd_client_port }}"
