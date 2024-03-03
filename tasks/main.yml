@@ -1,0 +1,7 @@
+---
+- name: Install Docker
+  ansible.builtin.include_tasks: docker.yml
+  when: etcd_install_docker
+
+- name: Install and configure etcd on Docker
+  ansible.builtin.include_tasks: install.yml

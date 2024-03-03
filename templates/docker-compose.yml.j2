@@ -1,0 +1,32 @@
+# {{ ansible_managed }}
+
+# etcd Docker Compose configuration file
+
+version: "2"
+
+services:
+  etcd:
+    image: quay.io/coreos/etcd:${IMAGE_TAG:-latest}
+    env_file: .env
+    hostname: ${ETCD_HOSTNAME}
+    restart: ${DOCKER_RESTART_POLICY:-always}
+    command: etcd -name ${ETCD_HOSTNAME} -initial-advertise-peer-urls ${ETCD_INITIAL_ADVERTISE_PEER_URLS}
+    environment:
+      ETCD_ADVERTISE_CLIENT_URLS: ${ETCD_ADVERTISE_CLIENT_URLS}
+      ETCD_DATA_DIR: /data
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: ${ETCD_INITIAL_ADVERTISE_PEER_URLS}
+      ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+      ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+      ETCD_INITIAL_CLUSTER: ${ETCD_INITIAL_CLUSTER}
+      ETCD_INITIAL_CLUSTER_STATE: new
+      ETCD_INITIAL_CLUSTER_TOKEN: ${ETCD_INITIAL_CLUSTER_TOKEN:-etcd}
+      ETCD_UNSUPPORTED_ARCH: arm64
+    ports:
+      - ${ETCD_CLIENT_PORT:-2379}:2379
+      - ${ETCD_PEER_PORT:-2380}:2380
+      - ${ETCD_CLIENT_API_PORT:-4001}:4001
+    volumes:
+      - etc-data:/data
+
+volumes:
+  etc-data:

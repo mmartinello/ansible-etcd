@@ -1,0 +1,47 @@
+---
+- name: Install Docker
+  ansible.builtin.import_role:
+    name: mmartinello.docker
+
+- name: Install Docker PIP package
+  ansible.builtin.pip:
+    name: docker
+    state: present
+
+- name: Create the Docker Compose project destination directory
+  ansible.builtin.file:
+    path: "{{ etcd_docker_compose_project_dir }}"
+    state: directory
+    recurse: true
+
+- name: Create the Docker Compose configuration file
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ etcd_docker_compose_project_dir }}/docker-compose.yml"
+    owner: root
+    group: root
+    mode: "0640"
+
+- name: Create the .env configuration file
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "{{ etcd_docker_compose_project_dir }}/.env"
+    owner: root
+    group: root
+    mode: "0660"
+
+- name: Pull Docker images
+  ansible.builtin.command:
+    cmd: docker compose pull
+    chdir: "{{ etcd_docker_compose_project_dir }}"
+  register: _command_output
+  changed_when: _command_output.rc == 0
+  when: etcd_docker_pull
+
+- name: Start the Docker Compose project
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ etcd_docker_compose_project_dir }}"
+  register: _command_output
+  changed_when: _command_output.rc == 0
+  when: etcd_start
