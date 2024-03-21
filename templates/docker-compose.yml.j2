@@ -2,15 +2,13 @@
 
 # etcd Docker Compose configuration file
 
-version: "2"
-
 services:
   etcd:
     image: quay.io/coreos/etcd:${IMAGE_TAG:-latest}
     env_file: .env
     hostname: ${ETCD_HOSTNAME}
     restart: ${DOCKER_RESTART_POLICY:-always}
-    command: etcd -name ${ETCD_HOSTNAME} -initial-advertise-peer-urls ${ETCD_INITIAL_ADVERTISE_PEER_URLS}
+    command: etcd -name ${ETCD_HOSTNAME}
     environment:
       ETCD_ADVERTISE_CLIENT_URLS: ${ETCD_ADVERTISE_CLIENT_URLS}
       ETCD_DATA_DIR: /data
