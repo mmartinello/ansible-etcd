@@ -56,6 +56,10 @@ etcd_peer_port: 2380
 # Client API port (on host, redirected to container)
 etcd_client_api_port: 4001
 
+# Auto compaction retention for mvcc key value store in hour.
+# 0 means disable auto compaction
+etcd_auto_compaction_retention: 1
+
 
 ###############################################################################
 # etcdctl settings
